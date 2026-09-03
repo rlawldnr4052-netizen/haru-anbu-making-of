@@ -22,8 +22,11 @@ type Options = {
 
 export function useSpaceGate(ref: RefObject<HTMLElement | null>, opts: Options) {
   const optsRef = useRef(opts);
-  optsRef.current = opts;
   const gate = opts.gate ?? false;
+
+  useEffect(() => {
+    optsRef.current = opts;
+  }, [opts]);
 
   useEffect(() => {
     if (!gate) return;

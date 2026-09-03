@@ -4,12 +4,15 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
 import { StartGate } from "@/components/StartGate";
+import { ScrollCue } from "@/components/ScrollCue";
+import { ProgressBar } from "@/components/ProgressBar";
 import { CloverLineScene } from "@/components/scenes/CloverLineScene";
 import { OpeningPromptScene } from "@/components/scenes/OpeningPromptScene";
 import { TeammateLineScene } from "@/components/scenes/TeammateLineScene";
 import { CommandScene } from "@/components/scenes/CommandScene";
 import { AutoStatsScene } from "@/components/scenes/AutoStatsScene";
 import { FinalScene } from "@/components/scenes/FinalScene";
+import { FieldScene } from "@/components/scenes/FieldScene";
 import { CreditsScene } from "@/components/scenes/CreditsScene";
 
 const LogoEvolutionScene = dynamic(() =>
@@ -55,8 +58,12 @@ const BentoTransformScene = dynamic(
 export function Scenes() {
   return (
     <main className="relative w-full bg-black text-white">
-      {/* 시작 게이트 — 스페이스바(또는 클릭)로 숫자 폭격부터 시작 */}
+      {/* 시작 게이트 — 스크롤(또는 클릭/엔터)로 숫자 폭격부터 시작 */}
       <StartGate />
+      {/* 하단 스크롤 단서 — 처음 보는 사람용, 멈추면 다시 떠서 안내 */}
+      <ScrollCue />
+      {/* 상단 진행 표시줄 — 지금 어디쯤인지 가늠 */}
+      <ProgressBar />
       <Suspense fallback={<div className="h-screen bg-black" />}>
         {/* 00 — 규모 폭격: 숫자 (12,236 / 612 / 228) */}
         <div id="nav-numbers" className="block" />
@@ -106,8 +113,12 @@ export function Scenes() {
 
         {/* === 회고/방법: 우리가 자주 보낸 말들 === */}
         <div id="nav-method" className="block" />
-        {/* 스페이스 → "하루안부." 타이틀 카드로 이동 */}
+        {/* 스페이스 → KHF 현장 검증으로 이동 */}
         <PromptGrammarScene gate />
+
+        {/* === 현장: KHF 2026에서 방향을 확인하다 === */}
+        {/* 제작 과정을 다 보여준 "뒤"에 온다. 앞에 두면 참고 자료로 축소된다 */}
+        <FieldScene gate />
 
         {/* 끝 — 타이틀 카드 + 영화 크레딧 */}
         {/* 스페이스 → 엔딩 크레딧으로 이동 */}

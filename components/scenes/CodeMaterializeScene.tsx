@@ -116,13 +116,13 @@ const chunks: Chunk[] = [
         </a>
         <div class="grid">
           <div class="w">
-            <div class="w-title">💊 투약</div>
+            <div class="w-title"><iconify-icon icon="fluent:pill-24-filled"/> 투약</div>
             <div class="big">33<em>%</em></div>
             <div class="sub">1/3 복용 완료</div>
             <div class="sub">다음 복용 18:00</div>
           </div>
           <div class="w pulse-w">
-            <div class="w-title">❤ 맥박</div>
+            <div class="w-title"><iconify-icon icon="fluent:heart-pulse-24-filled"/> 맥박</div>
             <div class="pulse-num">72<u>BPM</u></div>
             <div class="sub">평균 근처 (±74)</div>
           </div>
@@ -274,7 +274,7 @@ export function CodeMaterializeScene() {
   const ref = useRef<HTMLElement>(null);
   const codeRef = useRef<HTMLPreElement>(null);
   const [chars, setChars] = useState(0);
-  const [phase, setPhase] = useState<"idle" | "playing" | "scrolling" | "done">(
+  const [, setPhase] = useState<"idle" | "playing" | "scrolling" | "done">(
     "idle"
   );
   const startedRef = useRef(false);
@@ -592,7 +592,7 @@ export function CodeMaterializeScene() {
                   className="relative"
                   style={{
                     height: 200,
-                    background: "#f3e9dc url(/v11-preview/mockup.png) center/cover no-repeat",
+                    background: "#f3e9dc url(/making_of/v11-preview/mockup.png) center/cover no-repeat",
                   }}
                 >
                   <div

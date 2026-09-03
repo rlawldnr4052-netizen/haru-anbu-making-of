@@ -25,6 +25,12 @@
   color-scheme: dark;
 }
 
+/* 스크롤 단서(시작 화면·하단 큐) 부드러운 위아래 바운스 */
+@keyframes haruCueBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
 html,
 body {
   background: var(--color-bg);
@@ -75,7 +81,7 @@ html.lenis body {
   width: 26px;
   height: 26px;
   margin: -13px 0 0 -13px;
-  background: url("/cursor-haru.svg") center/contain no-repeat;
+  background: url("/making_of/cursor-haru.svg") center/contain no-repeat;
   filter: drop-shadow(0 0 6px var(--color-key-glow));
   transition: transform 0.18s cubic-bezier(0.2, 1, 0.4, 1);
 }

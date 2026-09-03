@@ -1,32 +1,16 @@
-// 자동재생 씬 사이의 "엔터 게이트".
-// 씬 락(lockScrollAt)이 스크롤을 막은 동안, 여기서 keydown을 받아 다음 단계로 진행한다.
-// 발표자가 엔터로 직접 박자를 통제하는 용도.
+"use client";
+
+// 자동재생 씬 사이의 "진행 게이트".
+// 예전엔 엔터만 받았지만, 이제 스크롤 제스처(휠/트랙패드/터치 스와이프)·엔터·스페이스·방향키를
+// 모두 lib/scrollAdvance에서 받아 다음 단계로 진행한다. 처음 보는 사람은 스크롤로,
+// 발표자는 엔터로 박자를 통제할 수 있다.
 //
-// promise — 엔터를 누르면(또는 cancel 시) resolve.
+// promise — 진행 신호를 받으면(또는 cancel 시) resolve.
 // cancel  — 언마운트 등으로 정리할 때 호출. 리스너 제거 + promise 즉시 resolve.
+import { waitForAdvance } from "@/lib/scrollAdvance";
+
 export type SpaceGate = { promise: Promise<void>; cancel: () => void };
 
 export function waitForSpace(): SpaceGate {
-  let resolveFn: () => void = () => {};
-  let done = false;
-
-  function onKey(e: KeyboardEvent) {
-    if (e.code === "Enter" || e.code === "NumpadEnter" || e.key === "Enter") {
-      e.preventDefault();
-      settle();
-    }
-  }
-  function settle() {
-    if (done) return;
-    done = true;
-    window.removeEventListener("keydown", onKey, true);
-    resolveFn();
-  }
-
-  const promise = new Promise<void>((resolve) => {
-    resolveFn = resolve;
-  });
-  window.addEventListener("keydown", onKey, true);
-
-  return { promise, cancel: settle };
+  return waitForAdvance();
 }

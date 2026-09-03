@@ -223,6 +223,28 @@ export function TtsCompareScene({ id, gate }: { id?: string; gate?: boolean }) {
     },
   });
 
+  // 이 섹션을 벗어나면 음성을 멈추고 글로우를 끈다.
+  //
+  // glow 는 AFTER 플레이어의 재생 상태만 따라간다. 발표자가 음성이 끝나기 전에
+  // 다음으로 넘기면(발표에선 그게 보통이다) 재생 상태가 false 로 떨어질 일이 없어,
+  // EdgeGlow 가 position:fixed + body 포털 + z-index 60 인 탓에 **남은 발표 내내**
+  // 모든 씬 위에 초록 테두리가 덮인 채로 간다. 음성도 다음 씬까지 흘러나온다.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e && !e.isIntersecting) {
+          (Object.keys(stopFns.current) as Side[]).forEach((s) => stopFns.current[s]?.());
+          setGlow(false);
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -242,7 +264,7 @@ export function TtsCompareScene({ id, gate }: { id?: string; gate?: boolean }) {
         <div className="grid w-full grid-cols-1 items-start gap-8 md:grid-cols-2 md:gap-10">
           <Player
             side="before"
-            src="/media/audio/tts-before.mp3"
+            src="/making_of/media/audio/tts-before.mp3"
             label="BEFORE"
             title="기존 음성"
             accent="#8A9099"
@@ -256,7 +278,7 @@ export function TtsCompareScene({ id, gate }: { id?: string; gate?: boolean }) {
           />
           <Player
             side="after"
-            src="/media/audio/tts-after.mp3"
+            src="/making_of/media/audio/tts-after.mp3"
             label="AFTER"
             title="개선된 음성"
             accent="var(--color-accent-green)"

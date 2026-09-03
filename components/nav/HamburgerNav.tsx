@@ -7,6 +7,7 @@ const items = [
   { href: "#nav-process", label: "Build" },
   { href: "#nav-video", label: "Film" },
   { href: "#nav-method", label: "Method" },
+  { href: "#nav-field", label: "Field" },
   { href: "#nav-numbers", label: "Numbers" },
 ];
 

@@ -62,7 +62,7 @@ function AttemptPreview({ kind }: { kind: 1 | 2 | 3 | 4 | 5 }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`/media/logo/attempt-${kind}.png`}
+      src={`/making_of/media/logo/attempt-${kind}.png`}
       alt=""
       className="h-full w-full object-contain"
       draggable={false}
@@ -74,7 +74,7 @@ function FinalLogo() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/media/logo/final.svg"
+      src="/making_of/media/logo/final.svg"
       alt="하루안부"
       className="h-full w-full object-contain"
       draggable={false}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 // 팀원이 준 "AI 음성 글로우" 효과를 메이킹 사이트(검정 배경)에 맞춰 포팅.
@@ -69,9 +69,11 @@ function noiseFn() {
 
 export function EdgeGlow({ active }: { active: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     const glowEl = ref.current;

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { lockScrollAt, releaseAndAdvance, ScrollLock } from "@/lib/scrollLock";
+import { subscribeAdvance } from "@/lib/scrollAdvance";
 
 // 비포→애프터 변신 릴 — 엔터 스텝 + 박스가 "그 자리에서 전체화면으로 넓어짐"(FLIP 모핑).
 //  · 쉬는 상태: 박스는 그냥 하얗게
@@ -13,12 +14,15 @@ import { lockScrollAt, releaseAndAdvance, ScrollLock } from "@/lib/scrollLock";
 //  · (Esc로 수동 축소 가능 — closing→rest)
 // 두 릴 모두 auto=0 → 'play' 메시지 전까지 비포에서 대기. transform 기반 모핑이라 iframe 리로드 없음.
 
-const A1 = "/transform/bento-transform.html?v=6&auto=0"; // 비포 대기 → 엔터로 재생
-const A2 = "/transform/bento-transform-2.html?v=8&auto=0"; // 비포 대기 → 엔터로 재생
+const A1 = "/making_of/transform/bento-transform.html?v=6&auto=0"; // 비포 대기 → 엔터로 재생
+const A2 = "/making_of/transform/bento-transform-2.html?v=8&auto=0"; // 비포 대기 → 엔터로 재생
 // 아래 영상(비포/애프터·TTS) 박스와 같은 크기 규칙 — 한 줄 제목 아래로 들어감
 const BOXW = "min(96vw, calc((82vh - 96px) * 16 / 9))";
 
 type Phase = "idle" | "a1b" | "a1" | "a2b" | "a2" | "closing" | "rest";
+
+const rectTransform = (r: DOMRect, vw: number, vh: number) =>
+  `translate(${r.left}px, ${r.top}px) scale(${r.width / vw}, ${r.height / vh})`;
 
 export function BentoTransformScene({ id, gate }: { id?: string; gate?: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -43,12 +47,8 @@ export function BentoTransformScene({ id, gate }: { id?: string; gate?: boolean 
     }
   };
 
-  // 전체화면(fixed) 요소를 슬롯 위치/크기로 매핑하는 transform
-  const rectTransform = (r: DOMRect, vw: number, vh: number) =>
-    `translate(${r.left}px, ${r.top}px) scale(${r.width / vw}, ${r.height / vh})`;
-
   // 박스 → 전체화면으로 넓힘 (그 자리에서)
-  const openMorph = () => {
+  const openMorph = useCallback(() => {
     const slot = slotRef.current;
     const v = morphRef.current;
     if (!slot || !v) return;
@@ -71,7 +71,7 @@ export function BentoTransformScene({ id, gate }: { id?: string; gate?: boolean 
     v.style.borderRadius = "0px";
     v.style.borderColor = "transparent";
     v.style.boxShadow = "none";
-  };
+  }, []);
 
   // 전체화면 모핑 스타일 즉시 제거 → morphRef가 슬롯 박스로 복귀(absolute inset-0)
   const resetMorphStyles = useCallback(() => {
@@ -134,19 +134,10 @@ export function BentoTransformScene({ id, gate }: { id?: string; gate?: boolean 
     return () => io.disconnect();
   }, []);
 
-  // 엔터 스텝 진행
+  // 스텝 진행 — 스크롤 제스처(또는 엔터/스페이스/방향키)로. ESC는 키보드로 닫기.
   useEffect(() => {
     if (!armed) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (phase !== "idle" && phase !== "closing") {
-          e.preventDefault();
-          close();
-        }
-        return;
-      }
-      if (e.code !== "Enter" && e.code !== "NumpadEnter" && e.key !== "Enter") return;
-      e.preventDefault();
+    const advanceStep = () => {
       if (busyRef.current) return;
       busyRef.current = true;
       window.setTimeout(() => {
@@ -195,9 +186,19 @@ export function BentoTransformScene({ id, gate }: { id?: string; gate?: boolean 
         post(a2Ref, "play");
       }
     };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && phase !== "idle" && phase !== "closing") {
+        e.preventDefault();
+        close();
+      }
+    };
+    const unsub = subscribeAdvance(advanceStep);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [armed, phase, close, gate, resetMorphStyles]);
+    return () => {
+      unsub();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [armed, phase, close, gate, openMorph, resetMorphStyles]);
 
   // 언마운트 안전 해제
   useEffect(

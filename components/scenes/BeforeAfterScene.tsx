@@ -23,8 +23,8 @@ export function BeforeAfterScene({ id, gate }: { id?: string; gate?: boolean }) 
     (navigator.connection?.saveData ||
       // @ts-expect-error connection types
       /2g|3g/.test(navigator.connection?.effectiveType ?? ""));
-  const beforeSrc = lowRes ? "/media/video/before-480.mp4" : "/media/video/before.mp4";
-  const afterSrc = lowRes ? "/media/video/after-480.mp4" : "/media/video/after.mp4";
+  const beforeSrc = lowRes ? "/making_of/media/video/before-480.mp4" : "/making_of/media/video/before.mp4";
+  const afterSrc = lowRes ? "/making_of/media/video/after-480.mp4" : "/making_of/media/video/after.mp4";
 
   // 발표용 스페이스바 게이트 — 스페이스 1회로 다음 섹션(TTS)으로 이동
   useSpaceGate(sectionRef, { gate, steps: 1 });
@@ -108,7 +108,7 @@ export function BeforeAfterScene({ id, gate }: { id?: string; gate?: boolean }) 
           <video
             ref={afterRef}
             src={afterSrc}
-            poster="/media/poster/after.jpg"
+            poster="/making_of/media/poster/after.jpg"
             muted
             loop
             playsInline
@@ -123,7 +123,7 @@ export function BeforeAfterScene({ id, gate }: { id?: string; gate?: boolean }) 
             <video
               ref={beforeRef}
               src={beforeSrc}
-              poster="/media/poster/before.jpg"
+              poster="/making_of/media/poster/before.jpg"
               muted
               loop
               playsInline

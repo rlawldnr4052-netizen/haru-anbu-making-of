@@ -20,9 +20,21 @@ export function CustomCursor() {
     let rx = mx;
     let ry = my;
 
+    // 첫 mousemove 전까지는 숨긴다. 초기값이 화면 정중앙이라 그대로 그리면
+    // 시작 화면의 CTA 문구("또는 스크롤로 시작") 위에 마크가 얹힌다.
+    dot.style.opacity = "0";
+    ring.style.opacity = "0";
+
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
+      if (dot.style.opacity === "0") {
+        // 실제 좌표로 한 번 순간이동시킨 뒤 보여준다(중앙에서 날아오는 것 방지).
+        rx = mx;
+        ry = my;
+        dot.style.opacity = "";
+        ring.style.opacity = "";
+      }
     };
     window.addEventListener("mousemove", onMove);
 
